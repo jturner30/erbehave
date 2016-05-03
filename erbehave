@@ -84,7 +84,7 @@ class Erbehave
 end
 
 def process_argv(argv)
-  argv.each { |arg| Erbehave.new(arg).run }
+  argv.each { |arg| Erbehave.new(arg).run if arg.end_with?('.html.erb')}
   exit
 end
 
