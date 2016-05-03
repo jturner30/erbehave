@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+class Erbehave
+  attr_reader :file_name
+  def initialize(argv)
+    @file_name = argv[0]
+  end
+
+  def run
+    puts file_name
+  end
+end
+
+Erbehave.new(ARGV).run
