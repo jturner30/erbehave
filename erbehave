@@ -44,6 +44,7 @@ class Erbehave
   end
 
   def indent_level(line)
+    return 0 if line.strip.empty?
     match = INDENT_SPACE.match(line)
     zero_or_number_of_space match
   end
