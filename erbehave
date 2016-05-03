@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 class Erbehave
+  attr_reader :file_name
+
   def initialize(file_name)
     @file_name = file_name
   end
@@ -27,10 +29,6 @@ class Erbehave
     File.read(file_name)
   end
 
-  def file_name
-    @file_name
-  end
-
   def indent_levels(lines)
     lines.each_with_object([]) do |line, levels|
       levels << indent_level(line)
@@ -52,7 +50,8 @@ class Erbehave
 
   def check_indent_levels(levels)
     previous_level = 0
-    levels.each_with_object(0) do |level, current_line|
+    current_line = 0
+    levels.each do |level|
       current_line += 1
       check_indent_level(level, previous_level, current_line)
       previous_level = level
@@ -79,7 +78,7 @@ class Erbehave
   end
 
   def exit_failure
-    abort "Aborting"
+    abort 'Aborting'
   end
 end
 
