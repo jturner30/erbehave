@@ -1,14 +1,90 @@
 #!/usr/bin/env ruby
 
 class Erbehave
-  attr_reader :file_name
-  def initialize(argv)
-    @file_name = argv[0]
+  def initialize(file_name)
+    @file_name = file_name
   end
 
   def run
-    puts file_name
+    log_preamble
+    check_indent_levels indent_levels(file.lines)
+    log_success
+  end
+
+  private
+
+  INDENT_SPACE = /^\s+/
+
+  def log_preamble
+    puts "Checking #{file_name}"
+  end
+
+  def log_success
+    puts "All checks pass"
+  end
+
+  def file
+    File.read(file_name)
+  end
+
+  def file_name
+    @file_name
+  end
+
+  def indent_levels(lines)
+    lines.each_with_object([]) do |line, levels|
+      levels << indent_level(line)
+    end
+  end
+
+  def zero_or_number_of_space(spaces)
+    if spaces.nil?
+      0
+    else
+      spaces[0].length
+    end
+  end
+
+  def indent_level(line)
+    match = INDENT_SPACE.match(line)
+    zero_or_number_of_space match
+  end
+
+  def check_indent_levels(levels)
+    previous_level = 0
+    levels.each_with_object(0) do |level, current_line|
+      current_line += 1
+      check_indent_level(level, previous_level, current_line)
+      previous_level = level
+    end
+  end
+
+  def check_indent_level(level, previous_level, current_line)
+    unless valid_indent_level(level, previous_level)
+      log_failure_at_line (current_line + 1)
+      exit_failure
+    end
+  end
+
+  def valid_indent_level(level, previous_level)
+    level.even? && level_within_acceptable_indent_range(level, previous_level)
+  end
+
+  def level_within_acceptable_indent_range(level, previous_level)
+    level == previous_level - 2 || level == previous_level || level == previous_level + 2
+  end
+
+  def log_failure_at_line(line)
+    puts "Bad indent level at line #{line}"
+  end
+
+  def exit_failure
+    abort "Aborting"
   end
 end
 
-Erbehave.new(ARGV).run
+def process_argv(argv)
+  argv.each { |arg| Erbehave.new(arg).run }
+end
+
+process_argv ARGV
