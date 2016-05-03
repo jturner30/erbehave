@@ -85,6 +85,7 @@ end
 
 def process_argv(argv)
   argv.each { |arg| Erbehave.new(arg).run }
+  exit
 end
 
 process_argv ARGV
